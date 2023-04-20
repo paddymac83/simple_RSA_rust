@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use slow_primes::Primes;
 
 fn main() {
 
@@ -6,21 +6,16 @@ fn main() {
     let RSA_enc = RsaEncoder::new();
     let mod_N = RSA_enc.calculate_mod_N();
     let exp = RSA_enc.calculate_exponent();
-    let dec = RSA_enc.calculate_decrypt();
+    println!("{:?}", exp);
 
 }
 
 struct RsaEncoder {
     lower_prime: usize,
     upper_prime: usize,
-    sieves,
+    sieves: Primes,
 }
 
-struct Message {
-    original: String,
-    encrypted: [&u8],
-    decrypted: String,
-}
 
 impl RsaEncoder {
     fn new() -> Self {
@@ -40,6 +35,8 @@ impl RsaEncoder {
         None => unreachable!(),
     };
 
+    println!("Upper and lower primes are {} and {}", upper_prime, lower_prime);
+
     Self {
         lower_prime,
         upper_prime,
@@ -48,24 +45,28 @@ impl RsaEncoder {
 }
 
     fn calculate_mod_N(&self) -> usize {
-        self.lower_prime*self.upper_prime
+        let N_mod = self.lower_prime*self.upper_prime;
+        println!("N mod is {}", N_mod);
+        return N_mod;
     }
 
-    fn calculate_exponent(&self) -> usize {
+    fn calculate_exponent(&self) -> Vec<usize> {
         // use pre-computed primes to find e such that it doesnt divide into p-1 and q-1
         let prime1 = self.upper_prime-1;
         let prime2 = self.lower_prime-1;
 
+        let mut primes_exponent: Vec<usize> = Vec::new();
+
         // iterate over list of Primes to find e
-        for i in self.sieves {
-            if prime1 % i == 0 & prime2 % i == 0 {
-                return i
+        for i in self.sieves.primes() {
+            //println!("{}", i);
+            if prime1 % i != 0 && prime2 % i != 0 && i < prime2 {
+                primes_exponent.push(i)
             } 
         }
+        
+        return primes_exponent;
     }
 
-    fn calculate_decrypt(&self) -> usize {
-
-    }
     
 }
