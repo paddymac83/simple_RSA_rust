@@ -6,8 +6,8 @@ use num_traits::One;
 fn main() {
 
     let mut rng = OsRng;   // zero struct to gen a random number
-    let mut bits = 16; 
-    let mut string = String::from("Hello world!");
+    let mut bits = 128; 
+    let mut string = String::from("Hello");
 
     let args: Vec<String> = env::args().collect();
 
