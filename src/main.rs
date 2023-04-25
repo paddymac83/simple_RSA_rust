@@ -6,17 +6,11 @@ use num_traits::One;
 fn main() {
 
     let mut rng = OsRng;   // zero struct to gen a random number
-    let mut bits = 128; 
-    let mut string = String::from("Hello");
 
     let args: Vec<String> = env::args().collect();
 
-    if args.len() > 1 { 
-        string = args[1].clone();   // fix using ref instead of cloning
-    }
-    if args.len() > 2 { 
-        bits = args[2].clone().parse::<usize>().unwrap(); // parse &str into usize
-    } 
+    let string = &args[1];
+    let bits = args[2].parse().unwrap();
 
     // rng is the range of the exponent
     let key = RSAPrivateKey::new(&mut rng, bits).expect("failed to generate a key");
@@ -38,7 +32,7 @@ fn main() {
 
     let enc_data = key.encrypt(&mut rng, PaddingScheme::PKCS1v15, &data[..]).expect("failed to encrypt");
 
-    let hex_string = hex::encode(enc_data.clone());  // convert encoded data to Hex
+    let hex_string = hex::encode(&enc_data);  // convert encoded data to Hex
     println!("\n\nEncrypted:\t{}",hex_string);
 
     // decode and convert back to string
@@ -47,10 +41,10 @@ fn main() {
     println!("\nDecrypted :\t{}",mystr);
 
     // prime check
-    let p=  key.primes()[0].clone();
-    let q=  key.primes()[1].clone();
+    let p=  &key.primes()[0];
+    let q=  &key.primes()[1];
     let val1: rsa::BigUint = One::one();   // multip identidy
-    let phi = (p - val1.clone()) * (q - val1.clone());
+    let phi = (p - &val1) * (q - &val1);
     let val = (key.d()*key.e()) % phi;
     println!("\n(d*e) mod (p-1)(q-1):\t{}",val);
 
